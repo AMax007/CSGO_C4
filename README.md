@@ -75,7 +75,7 @@ The code runs both on real hardware and in **Proteus 8** simulation.
 
 Here is a visual overview of the hardware connections and the software state machine:
 
-![CSGO C4 Circuit Diagram](Boot_State.png)
+![CSGO C4 System Diagram](Boot_State.png)
 
 
 ---
