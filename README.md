@@ -68,57 +68,14 @@ The code runs both on real hardware and in **Proteus 8** simulation.
 
 ## 🔌 Circuit Schematic
 
-![CSGO C4 Circuit Diagram](csgo_c4.svg)
+![CSGO C4 Circuit Diagram](csgo_c4.SVG)
 
 ---
 ## 🧠 System Architecture
 
 Here is a visual overview of the hardware connections and the software state machine:
 
-```mermaid
-.graph TD
-    subgraph Hardware
-        A[Arduino UNO/Nano]
-        LCD[16x2 LCD Display]
-        Keypad[4x3 Matrix Keypad]
-        LED[LED + 220Ω resistor]
-        Buzzer[Passive Buzzer]
-    end
-
-    subgraph Software_States
-        Boot[BOOT - 2s startup]
-        Idle[IDLE - wait for code]
-        Armed[ARMED - timer running]
-        DefuseMode[DEFUSE MODE - wait for defuse code]
-        Defused[DEFUSED - success]
-        Exploded[EXPLODED - failure]
-    end
-
-    A -->|Drives| LCD
-    A -->|Reads| Keypad
-    A -->|Controls| LED
-    A -->|Outputs tone| Buzzer
-
-    Boot -->|After 2s| Idle
-
-    Idle -->|Enter code + # correct| Armed
-    Idle -->|Enter code + # wrong| Idle
-
-    Armed -->|Press #| DefuseMode
-    Armed -->|Timer expires| Exploded
-
-    DefuseMode -->|Enter code + # correct| Defused
-    DefuseMode -->|Enter code + # wrong| Armed
-    DefuseMode -->|Press * to cancel| Armed
-
-    Defused -->|End state| Defused
-    Exploded -->|End state| Exploded
-
-    %% Additional notes
-    Armed -->|During timer: display star animation, LED blinks| Armed
-    DefuseMode -->|LCD shows 'Enter Defuse:'| DefuseMode
-    WrongCode -->|Adds 5s penalty| Armed
-```
+![CSGO C4 Circuit Diagram](Boot_State.png)
 
 
 ---
