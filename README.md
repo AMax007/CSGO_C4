@@ -66,6 +66,12 @@ The code runs both on real hardware and in **Proteus 8** simulation.
 
 ---
 
+## 🔌 Circuit Schematic
+
+![CSGO C4 Circuit Diagram](images/csgo_c4.svg)
+
+---
+
 ## 📐 Wiring Diagram
 
 ### LCD → Arduino
