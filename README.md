@@ -68,10 +68,75 @@ The code runs both on real hardware and in **Proteus 8** simulation.
 
 ## 🔌 Circuit Schematic
 
-![CSGO C4 Circuit Diagram](images/csgo_c4.svg)
+![CSGO C4 Circuit Diagram](csgo_c4.svg)
+
+---
+## 🧠 System Architecture
+
+Here is a visual overview of the hardware connections and the software state machine:
+
+```mermaid
+.graph TD
+    subgraph Hardware
+        A[Arduino UNO/Nano]
+        LCD[16x2 LCD Display]
+        Keypad[4x3 Matrix Keypad]
+        LED[LED + 220Ω resistor]
+        Buzzer[Passive Buzzer]
+    end
+
+    subgraph Software_States
+        Boot[BOOT - 2s startup]
+        Idle[IDLE - wait for code]
+        Armed[ARMED - timer running]
+        DefuseMode[DEFUSE MODE - wait for defuse code]
+        Defused[DEFUSED - success]
+        Exploded[EXPLODED - failure]
+    end
+
+    A -->|Drives| LCD
+    A -->|Reads| Keypad
+    A -->|Controls| LED
+    A -->|Outputs tone| Buzzer
+
+    Boot -->|After 2s| Idle
+
+    Idle -->|Enter code + # correct| Armed
+    Idle -->|Enter code + # wrong| Idle
+
+    Armed -->|Press #| DefuseMode
+    Armed -->|Timer expires| Exploded
+
+    DefuseMode -->|Enter code + # correct| Defused
+    DefuseMode -->|Enter code + # wrong| Armed
+    DefuseMode -->|Press * to cancel| Armed
+
+    Defused -->|End state| Defused
+    Exploded -->|End state| Exploded
+
+    %% Additional notes
+    Armed -->|During timer: display star animation, LED blinks| Armed
+    DefuseMode -->|LCD shows 'Enter Defuse:'| DefuseMode
+    WrongCode -->|Adds 5s penalty| Armed
+```
+
 
 ---
 
+### State Transitions Table
+
+| Transition | Trigger | Action |
+|------------|---------|--------|
+| BOOT → IDLE | 2s timeout | LCD shows "Enter Code:" |
+| IDLE → ARMED | Correct code + `#` | Start timer, blink LED, play arming sound |
+| ARMED → DEFUSE MODE | Press `#` | Show "Enter Defuse:" on LCD |
+| DEFUSE MODE → DEFUSED | Correct code + `#` | Stop timer, LED off, success beep |
+| DEFUSE MODE → ARMED | Wrong code + `#` | Add 5s penalty, play error beep |
+| DEFUSE MODE → ARMED | Press `*` | Cancel defuse, return to armed view |
+| ARMED → EXPLODED | Timer reaches 0 | LED solid, explosion sound |
+
+
+---
 ## 📐 Wiring Diagram
 
 ### LCD → Arduino
